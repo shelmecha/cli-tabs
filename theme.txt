@@ -1,0 +1,3 @@
+claude
+
+# Options: claude, circles, hearts, moon, sprout, chick
