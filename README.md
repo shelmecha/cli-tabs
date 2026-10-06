@@ -7,6 +7,9 @@ Shows the state of each Claude Code session on its Windows Terminal tab. While C
 ✓  cli-tabs         Claude is done, or waits for your answer or permission
 ```
 
+![Claude works](docs/tab-working.png)
+![Claude is done](docs/tab-done.png)
+
 Status: finished. Tested on 2026-10-06 with Claude Code 2.1.291, Windows Terminal and Python 3.14 on Windows 11.
 
 ## Requirements
@@ -85,6 +88,12 @@ The value `"none"` does not hide the icon. Only new tabs use the change.
 - After you approve a permission, the tab shows the check until the tool is complete.
 - `/rename` does not start a hook. The new name shows at the next state change.
 - Sessions that started before the install keep the Claude Code title until you restart them.
+
+## Test status (2026-10-06)
+
+- **Seen working in a live tab:** the animated star while Claude works, the check when Claude is done, `claude -n <name>`, the hidden PowerShell icon, no progress ring, and the animation process stops after "done".
+- **Not tested live:** `/rename` in a running session, the permission prompt state, `StopFailure`, and the themes other than `claude` and `circles`.
+- **Deliberately cut:** the progress ring on the tab icon. It was the only signal on a tab with a Windows Terminal name, but the owner did not want a spinning ring. A red or yellow ring is not possible: in our test, Windows Terminal showed all ring states in one color.
 
 ## Uninstall
 
