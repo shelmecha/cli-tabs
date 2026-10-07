@@ -1,6 +1,6 @@
 # cli-tabs
 
-Shows the state of each Claude Code session on its Windows Terminal tab. While Claude works, the tab shows the Claude loading star (`· ✢ ✶ ✻ ✽`), animated. When Claude is done or waits for you, the tab shows a check (`✓`).
+Shows the state of each Claude Code session on its Windows Terminal tab. While Claude works, the tab shows the Claude loading star (`✢ ✶ ✻ ✽`), animated. When Claude is done or waits for you, the tab shows a check (`✓`).
 
 ```
 ✻ agent-dave        Claude works
@@ -10,7 +10,7 @@ Shows the state of each Claude Code session on its Windows Terminal tab. While C
 ![Claude works](docs/tab-working.png)
 ![Claude is done](docs/tab-done.png)
 
-Status: finished. Tested on 2026-10-06 with Claude Code 2.1.291, Windows Terminal and Python 3.14 on Windows 11.
+Status: finished. Tested on 2026-10-06 with Claude Code 2.1.291 and on 2026-10-07 with 2.1.292, Windows Terminal and Python 3.14 on Windows 11.
 
 ## Requirements
 
@@ -47,7 +47,8 @@ Write the theme name on the first line of [`theme.txt`](theme.txt). The next sta
 
 | Theme | Working | Done |
 |---|---|---|
-| `claude` (default) | `· ✢ ✶ ✻ ✽` animated | `✓` |
+| `claude` (default) | `✢ ✶ ✻ ✽` animated | `✓` |
+| `steady` | `✻` (no animation) | `✓` |
 | `circles` | 🟡 | 🟢 |
 | `hearts` | 💛 | 💚 |
 | `moon` | 🌑 🌒 🌓 🌔 🌕 animated | ✨ |
@@ -68,7 +69,7 @@ The value `"none"` does not hide the icon. Only new tabs use the change.
 
 - Claude Code starts `tab_status.py` from its hooks. The hooks run in the background (`"async": true`), so Claude does not wait for them.
 - Hook commands run in a hidden console. A title from a hook does not get to the tab. The script finds the parent `claude.exe`, attaches to its console and sets the title there with `SetConsoleTitleW`.
-- For an animated theme, the script starts one background process per session. That process changes the frame every 0.12 seconds. It stops when the state is not "working" or when `claude.exe` stops.
+- For an animated theme, the script starts one background process per session. That process changes the frame every 0.12 seconds. It stops when the state is not "working" or when `claude.exe` stops. A tool call while the animation runs does not reset the frame.
 - The state of each session is in `%TEMP%\cli-tabs\<session id>.json`.
 - A `PostToolUse` hook can arrive after `Stop`. The script ignores a "working" from `PostToolUse` for 3 seconds after "done".
 - The script also clears the Windows Terminal progress ring (`OSC 9;4`). To stop the ring from Claude Code, set `"terminalProgressBarEnabled": false` in `settings.json`.
@@ -89,10 +90,12 @@ The value `"none"` does not hide the icon. Only new tabs use the change.
 - `/rename` does not start a hook. The new name shows at the next state change.
 - Sessions that started before the install keep the Claude Code title until you restart them.
 
-## Test status (2026-10-06)
+## Test status (2026-10-06, updated 2026-10-07)
+
+- **2026-10-07 fix, seen working in a live tab:** the star had a `·` frame that looked blank at tab size, and each tool call reset the star to that frame. Both are gone. `python -I tools/sample_title.py` read the tab title every 30 ms: 0 blank or `·` titles, the frames stayed in order while the tool hook ran 3 times, "done" showed the check and stopped the animation.
 
 - **Seen working in a live tab:** the animated star while Claude works, the check when Claude is done, `claude -n <name>`, the hidden PowerShell icon, no progress ring, and the animation process stops after "done".
-- **Not tested live:** `/rename` in a running session, the permission prompt state, `StopFailure`, and the themes other than `claude` and `circles`.
+- **Not tested live:** `/rename` in a running session, the permission prompt state, `StopFailure`, and the themes other than `claude` and `circles` (also `steady`).
 - **Deliberately cut:** the progress ring on the tab icon. It was the only signal on a tab with a Windows Terminal name, but the owner did not want a spinning ring. A red or yellow ring is not possible: in our test, Windows Terminal showed all ring states in one color.
 
 ## Uninstall

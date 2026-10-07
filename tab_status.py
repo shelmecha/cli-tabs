@@ -26,8 +26,10 @@ import time
 
 # working: frames (more than one = animated), done: one glyph
 THEMES = {
-    "claude": {"working": ["·", "✢", "✶", "✻", "✽", "✻", "✶", "✢"],
+    # no "·" frame: at tab size it looks blank, so the star seemed to blink off
+    "claude": {"working": ["✢", "✶", "✻", "✽", "✻", "✶"],
                "done": "✓ "},  # trailing space: the check sits tight against the name
+    "steady": {"working": ["✻"], "done": "✓ "},
     "circles": {"working": ["\U0001F7E1"], "done": "\U0001F7E2"},
     "hearts": {"working": ["\U0001F49B"], "done": "\U0001F49A"},
     "moon": {"working": ["\U0001F311", "\U0001F312", "\U0001F313", "\U0001F314", "\U0001F315"],
@@ -207,11 +209,19 @@ def main():
             or os.path.basename(os.path.normpath(hook.get("cwd") or os.getcwd())) or "claude")
     state_path = os.path.join(STATE_DIR, session + ".json")
 
+    prev = read_json(state_path)
     if mode == "tool":
-        prev = read_json(state_path)
         if prev.get("state") == "done" and time.time() - prev.get("ts", 0) < DONE_GUARD_S:
             return
         mode = "working"
+
+    # Already working with a live animator: keep its frame. Writing frame 0 here
+    # on every tool call made the star jump back each time.
+    if mode == "working" and prev.get("state") == "working":
+        anim = read_json(os.path.join(STATE_DIR, session + ".anim")).get("pid")
+        if anim and is_alive(anim):
+            write_json(state_path, {"state": mode, "ts": time.time(), "name": name})
+            return
 
     # The state file goes first: the animator reads it on every frame.
     if mode == "end":
