@@ -221,6 +221,10 @@ def main():
         anim = read_json(os.path.join(STATE_DIR, session + ".anim")).get("pid")
         if anim and is_alive(anim):
             write_json(state_path, {"state": mode, "ts": time.time(), "name": name})
+            pid = find_claude_pid()
+            if pid is not None and attach(pid):
+                write_console(CLEAR)  # still clear a ring from the tool call
+                k32.FreeConsole()
             return
 
     # The state file goes first: the animator reads it on every frame.
