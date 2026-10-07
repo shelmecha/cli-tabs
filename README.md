@@ -32,6 +32,18 @@ Status: finished. Tested on 2026-10-06 with Claude Code 2.1.291 and on 2026-10-0
 
 The env value `CLAUDE_CODE_DISABLE_TERMINAL_TITLE=1` stops Claude Code from writing its own tab title (`◐` and `✳`). Without it, Claude Code writes over the star and the check.
 
+## Check that it works
+
+1. Start a Claude Code session in the `cli-tabs` folder and ask Claude to run this command with its Bash tool:
+
+   ```
+   python -I tools/sample_title.py 4
+   ```
+
+   The script reads the title of its own tab every 30 ms for 4 seconds. It must run inside a Claude Code tool call, because it finds the tab through the parent `claude.exe`.
+2. Pass: exit code 0, the line `blank or dot titles: 0`, and the stars in order (`✢ ✶ ✻ ✽ ✻ ✶`).
+3. Exit code 1 means no parent `claude.exe` was found (for example, you ran it in a normal terminal), or a title was blank.
+
 ## Name a tab
 
 The tab shows the session name, or the folder name if the session has no name.
@@ -47,7 +59,7 @@ Write the theme name on the first line of [`theme.txt`](theme.txt). The next sta
 
 | Theme | Working | Done |
 |---|---|---|
-| `claude` (default) | `✢ ✶ ✻ ✽` animated | `✓` |
+| `claude` (default) | `✢ ✶ ✻ ✽ ✻ ✶` animated | `✓` |
 | `steady` | `✻` (no animation) | `✓` |
 | `circles` | 🟡 | 🟢 |
 | `hearts` | 💛 | 💚 |
@@ -95,7 +107,7 @@ The value `"none"` does not hide the icon. Only new tabs use the change.
 - **2026-10-07 fix, seen working in a live tab:** the star had a `·` frame that looked blank at tab size, and each tool call reset the star to that frame. Both are gone. `python -I tools/sample_title.py` read the tab title every 30 ms: 0 blank or `·` titles, the frames stayed in order while the tool hook ran 3 times, "done" showed the check and stopped the animation.
 
 - **Seen working in a live tab:** the animated star while Claude works, the check when Claude is done, `claude -n <name>`, the hidden PowerShell icon, no progress ring, and the animation process stops after "done".
-- **Not tested live:** `/rename` in a running session, the permission prompt state, `StopFailure`, and the themes other than `claude` and `circles` (also `steady`).
+- **Not tested live:** `/rename` in a running session, the permission prompt state, `StopFailure`, the `steady` theme, and the themes other than `claude` and `circles`.
 - **Deliberately cut:** the progress ring on the tab icon. It was the only signal on a tab with a Windows Terminal name, but the owner did not want a spinning ring. A red or yellow ring is not possible: in our test, Windows Terminal showed all ring states in one color.
 
 ## Uninstall
