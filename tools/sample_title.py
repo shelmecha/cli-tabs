@@ -3,7 +3,8 @@
 Run it from a Claude Code Bash tool call, so its parent chain reaches claude.exe:
   python -I tools/sample_title.py [seconds]
 It attaches to the console of claude.exe and reads the title every 30 ms.
-Pass: "blank or dot titles: 0", and the frames stay in order.
+Pass: exit 0, "blank or dot titles: 0", and the frames stay in order.
+Exit 1: no parent claude.exe, or a blank or dot title.
 """
 import collections
 import ctypes
@@ -34,4 +35,6 @@ ts.k32.FreeConsole()
 print("transitions:", len(seq))
 print("distinct:", dict(collections.Counter(seq)))
 print("first glyphs in order:", " ".join(repr(s[:1]) for s in seq[:40]))
-print("blank or dot titles:", len([s for s in seq if not s.strip() or s.startswith("·")]))
+bad = len([s for s in seq if not s.strip() or s.startswith("·")])
+print("blank or dot titles:", bad)
+sys.exit(0 if pid is not None and bad == 0 else 1)
