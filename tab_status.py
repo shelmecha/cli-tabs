@@ -27,9 +27,10 @@ import time
 # working: frames (more than one = animated), done: one glyph
 THEMES = {
     # no "·" frame: at tab size it looks blank, so the star seemed to blink off
-    "claude": {"working": ["✢", "✶", "✻", "✽", "✻", "✶"],
-               "done": "✓ "},  # trailing space: the check sits tight against the name
-    "steady": {"working": ["✻"], "done": "✓ "},
+    # trailing space after each star and the check: they sit tight against the name
+    "claude": {"working": ["✢ ", "✶ ", "✻ ", "✽ ", "✻ ", "✶ "],
+               "done": "✓ "},
+    "steady": {"working": ["✻ "], "done": "✓ "},
     "circles": {"working": ["\U0001F7E1"], "done": "\U0001F7E2"},
     "hearts": {"working": ["\U0001F49B"], "done": "\U0001F49A"},
     "moon": {"working": ["\U0001F311", "\U0001F312", "\U0001F313", "\U0001F314", "\U0001F315"],
